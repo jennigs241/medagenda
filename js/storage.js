@@ -3,7 +3,7 @@
  */
 const STORAGE_KEY = 'medagenda_appointments';
 
-const Storage = {
+export const Storage = {
   /**
    * Récupère tous les rendez-vous du localStorage
    * @returns {Array} Liste des rendez-vous
