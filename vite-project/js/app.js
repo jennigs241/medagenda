@@ -1,4 +1,4 @@
-import { saveToStorage } from './storage.js';
+import { AppointmentManager } from './appointments.js';
 
 /**
  * Contrôleur principal de l'application
