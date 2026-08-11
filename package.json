@@ -1,22 +1,15 @@
 {
   "name": "vite-project",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
   "devDependencies": {
-<<<<<<< HEAD:package.json
-    "gh-pages": "^6.1.1",
-    "vite": "^5.0.0"
-=======
     "gh-pages": "^6.3.0",
     "vite": "^8.2.0"
->>>>>>> 843bd40 (ci: ajout du fichier deploy.yml et mise a jour des chemins):vite-project/vite-project/package.json
   }
 }

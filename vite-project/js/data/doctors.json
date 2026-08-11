@@ -1,6 +1,0 @@
-[
-  { "id": 1, "name": "Dr. Martin", "specialty": "Médecine Générale" },
-  { "id": 2, "name": "Dr. Bernard", "specialty": "Pédiatrie" },
-  { "id": 3, "name": "Dr. Thomas", "specialty": "Cardiologie" },
-  { "id": 4, "name": "Dr. Petit", "specialty": "Dermatologie" }
-]
