@@ -1,5 +1,4 @@
-import { getAppointments } from './storage.js';
-import { renderList } from './appointments.js';
+import { saveToStorage } from './storage.js';
 
 async function loadDoctors() {
   try {
