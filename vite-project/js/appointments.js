@@ -1,7 +1,9 @@
+import { Storage } from './storage.js';
+
 /**
  * Module métier de gestion des rendez-vous
  */
-class AppointmentManager {
+export class AppointmentManager {
   constructor() {
     this.appointments = Storage.getAppointments();
   }

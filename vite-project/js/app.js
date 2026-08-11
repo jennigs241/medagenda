@@ -1,3 +1,5 @@
+import { saveToStorage } from './storage.js';
+
 /**
  * Contrôleur principal de l'application
  */
@@ -21,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadDoctors();
   render();
 
-  // --- BONUS : Chargement des médecins via fetch (async/await) ---
+  // --- Chargement des médecins via fetch (async/await) ---
   async function loadDoctors() {
     try {
       const response = await fetch('data/doctors.json');
@@ -236,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAppointments();
   });
 
-  // --- BONUS : Bouton RDV du Jour ---
+  // --- Bouton RDV du Jour ---
   document.getElementById('btn-filter-today').addEventListener('click', () => {
     const today = new Date().toISOString().split('T')[0];
     dateFilter.value = today;
