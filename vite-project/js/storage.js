@@ -10,7 +10,7 @@ export function getAppointments() {
 export function saveAppointment(appointment) {
   const appointments = getAppointments();
   
-  // Vérifier si le RDV existe déjà (mode modification) ou s'il s'agit d'un nouveau RDV
+  // Si le RDV existe déjà, on le met à jour, sinon on l'ajoute
   const index = appointments.findIndex(app => app.id === appointment.id);
   
   if (index !== -1) {
@@ -24,9 +24,9 @@ export function saveAppointment(appointment) {
 
 // Supprimer un rendez-vous par son ID
 export function deleteAppointment(id) {
-  let appointments = getAppointments();
-  appointments = appointments.filter(app => app.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+  const appointments = getAppointments();
+  const updatedAppointments = appointments.filter(app => app.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedAppointments));
 }
 
 // Récupérer un rendez-vous spécifique par son ID
