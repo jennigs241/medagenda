@@ -1,19 +1,16 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MedAgenda - Gestion des rendez-vous</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="src/css/style.css">
   
-  <!-- Chargement garanti dans le bon ordre grâce à defer -->
-  <script src="js/storage.js" defer></script>
-  <script src="js/appointments.js" defer></script>
-  <script src="js/app.js" defer></script>
+  <!-- Fichier JS unique chargé avec defer -->
+  <script src="src/main.js" defer></script>
 </head>
 <body>
 
-  <!-- En-tête -->
   <header class="main-header">
     <div class="header-content">
       <h1>🩺 MedAgenda</h1>
@@ -46,16 +43,16 @@
       </div>
     </section>
 
-    <!-- Barre d'outils et de filtres -->
+    <!-- Toolbar -->
     <section class="toolbar">
       <div class="toolbar-left">
         <button id="btn-open-modal" class="btn btn-primary">+ Nouveau rendez-vous</button>
         <button id="btn-today" class="btn btn-secondary">📆 RDV du jour</button>
-        <button id="btn-export-csv" class="btn btn-outline" title="Exporter en CSV">📥 Exporter CSV</button>
+        <button id="btn-export-csv" class="btn btn-outline">📥 Exporter CSV</button>
       </div>
 
       <div class="toolbar-right">
-        <input type="text" id="search-input" placeholder="Rechercher patient, tel, médecin..." class="form-control">
+        <input type="text" id="search-input" placeholder="Rechercher patient, tel, médecin..." class="form-control" autocomplete="off">
         
         <select id="filter-status" class="form-control">
           <option value="ALL">Tous les statuts</option>
@@ -71,16 +68,14 @@
       </div>
     </section>
 
-    <!-- Liste des rendez-vous -->
+    <!-- Liste RDV -->
     <section class="appointments-section">
       <h2>Liste des rendez-vous</h2>
-      <div id="appointments-container" class="appointments-grid">
-        <!-- Les cartes de RDV seront injectées dynamiquement ici -->
-      </div>
+      <div id="appointments-container" class="appointments-grid"></div>
     </section>
   </main>
 
-  <!-- Modal Formulaire (Création / Modification) -->
+  <!-- Modal -->
   <div id="modal-form" class="modal hidden">
     <div class="modal-content">
       <span class="close-modal" id="btn-close-modal">&times;</span>
@@ -90,18 +85,22 @@
 
         <div class="form-group">
           <label for="patient">Nom du patient *</label>
-          <input type="text" id="patient" required>
+          <input type="text" id="patient" required autocomplete="name">
         </div>
 
         <div class="form-group">
           <label for="phone">Téléphone *</label>
-          <input type="tel" id="phone" required>
+          <input type="tel" id="phone" required autocomplete="tel">
         </div>
 
         <div class="form-group">
           <label for="doctor">Médecin *</label>
           <select id="doctor" required>
-            <option value="">Chargement des médecins...</option>
+            <option value="">-- Sélectionner un médecin --</option>
+            <option value="Dr. Martin">Dr. Martin</option>
+            <option value="Dr. Dupont">Dr. Dupont</option>
+            <option value="Dr. Ndong">Dr. Ndong</option>
+            <option value="Dr. Bernard">Dr. Bernard</option>
           </select>
         </div>
 
@@ -118,7 +117,7 @@
 
         <div class="form-group">
           <label for="reason">Motif *</label>
-          <input type="text" id="reason" required>
+          <input type="text" id="reason" required autocomplete="off">
         </div>
 
         <div class="form-group">
@@ -141,6 +140,5 @@
     </div>
   </div>
 
- 
 </body>
 </html>
