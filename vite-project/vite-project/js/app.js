@@ -1,23 +1,17 @@
-<<<<<<< HEAD
-import { AppointmentManager } from './appointments.js';
-
 /**
  * Contrôleur principal de l'application
  */
 document.addEventListener('DOMContentLoaded', () => {
   const manager = new AppointmentManager();
-=======
-import { saveToStorage } from './storage.js';
->>>>>>> 843bd40c730544ff455cf002513b2dfccb66f369
 
-async function loadDoctors() {
-  try {
-    // import.meta.env.BASE_URL s'adapte automatiquement à GitHub Pages
-    const response = await fetch(`${import.meta.env.BASE_URL}data/doctors.json`); 
-    if (!response.ok) throw new Error('Erreur de chargement des médecins');
-    const doctors = await response.json();
+  // Éléments du DOM
+  const modal = document.getElementById('appointment-modal');
+  const form = document.getElementById('appointment-form');
+  const formError = document.getElementById('form-error');
+  const modalTitle = document.getElementById('modal-title');
+  const listContainer = document.getElementById('appointments-list');
+  const doctorSelect = document.getElementById('doctor');
 
-<<<<<<< HEAD
   // Filtres
   const searchInput = document.getElementById('search-input');
   const statusFilter = document.getElementById('status-filter');
@@ -27,7 +21,7 @@ async function loadDoctors() {
   loadDoctors();
   render();
 
-  // --- Chargement des médecins via fetch (async/await) ---
+  // --- BONUS : Chargement des médecins via fetch (async/await) ---
   async function loadDoctors() {
     try {
       const response = await fetch('data/doctors.json');
@@ -130,36 +124,16 @@ async function loadDoctors() {
         </div>
       `;
       listContainer.appendChild(card);
-=======
-    doctorSelect.innerHTML = '<option value="">-- Sélectionner un médecin --</option>';
-    doctors.forEach(doc => {
-      const option = document.createElement('option');
-      option.value = doc.name;
-      option.textContent = `${doc.name} (${doc.specialty})`;
-      doctorSelect.appendChild(option);
->>>>>>> 843bd40c730544ff455cf002513b2dfccb66f369
     });
-  } catch (error) {
-    console.error(error);
-    doctorSelect.innerHTML = `
-      <option value="">-- Sélectionner un médecin --</option>
-      <option value="Dr. Martin">Dr. Martin</option>
-      <option value="Dr. Bernard">Dr. Bernard</option>
-    `;
   }
-<<<<<<< HEAD
 
   // --- Gestion de la Modal & Formulaire ---
-  const btnOpenModal = document.getElementById('btn-open-modal');
-  if (btnOpenModal) {
-    btnOpenModal.addEventListener('click', () => openModal());
-  }
+  document.getElementById('btn-open-modal').addEventListener('click', () => {
+    openModal();
+  });
 
-  const closeModalBtn = document.querySelector('.close-modal');
-  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-
-  const cancelFormBtn = document.getElementById('btn-cancel-form');
-  if (cancelFormBtn) cancelFormBtn.addEventListener('click', closeModal);
+  document.querySelector('.close-modal').addEventListener('click', closeModal);
+  document.getElementById('btn-cancel-form').addEventListener('click', closeModal);
 
   function openModal(appointment = null) {
     formError.classList.add('hidden');
@@ -255,25 +229,19 @@ async function loadDoctors() {
   statusFilter.addEventListener('change', renderAppointments);
   dateFilter.addEventListener('change', renderAppointments);
 
-  const btnReset = document.getElementById('btn-reset-filters');
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
-      searchInput.value = '';
-      statusFilter.value = 'ALL';
-      dateFilter.value = '';
-      renderAppointments();
-    });
-  }
+  document.getElementById('btn-reset-filters').addEventListener('click', () => {
+    searchInput.value = '';
+    statusFilter.value = 'ALL';
+    dateFilter.value = '';
+    renderAppointments();
+  });
 
-  // --- Bouton RDV du Jour ---
-  const btnFilterToday = document.getElementById('btn-filter-today');
-  if (btnFilterToday) {
-    btnFilterToday.addEventListener('click', () => {
-      const today = new Date().toISOString().split('T')[0];
-      dateFilter.value = today;
-      renderAppointments();
-    });
-  }
+  // --- BONUS : Bouton RDV du Jour ---
+  document.getElementById('btn-filter-today').addEventListener('click', () => {
+    const today = new Date().toISOString().split('T')[0];
+    dateFilter.value = today;
+    renderAppointments();
+  });
 
   // Sécurité XSS basique
   function escapeHtml(str) {
@@ -282,6 +250,3 @@ async function loadDoctors() {
     }[match]));
   }
 });
-=======
-}
->>>>>>> 843bd40c730544ff455cf002513b2dfccb66f369
