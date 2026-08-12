@@ -1,9 +1,10 @@
-name: Deploy Vite site to Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: ["main"]
 
+  # Permet le déclenchement manuel si besoin
   workflow_dispatch:
 
 permissions:
@@ -25,7 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
