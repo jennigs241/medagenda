@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MedAgenda - Gestion des rendez-vous</title>
-  <link rel="stylesheet" href="src/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- En-tête -->
   <header class="main-header">
     <div class="header-content">
       <h1>🩺 MedAgenda</h1>
@@ -41,7 +40,7 @@
       </div>
     </section>
 
-    <!-- Barre d'outils -->
+    <!-- Toolbar -->
     <section class="toolbar">
       <div class="toolbar-left">
         <button id="btn-open-modal" class="btn btn-primary">+ Nouveau rendez-vous</button>
@@ -66,7 +65,7 @@
       </div>
     </section>
 
-    <!-- Liste des rendez-vous -->
+    <!-- Liste RDV -->
     <section class="appointments-section">
       <h2>Liste des rendez-vous</h2>
       <div id="appointments-container" class="appointments-grid"></div>
@@ -138,7 +137,9 @@
     </div>
   </div>
 
-  <!-- Point d'entrée unique vers votre script -->
-  <script type="module" src="/src/main.js"></script>
+  <!-- Chargement dans l'ordre exact demandé -->
+  <script src="js/storage.js"></script>
+  <script src="js/appointments.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

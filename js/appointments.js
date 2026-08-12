@@ -14,7 +14,6 @@ class AppointmentManager {
     return this.appointments;
   }
 
-  // Règle métier obligatoire : Vérifier le conflit médecin/date/heure
   hasConflict(doctor, date, time, excludeId = null) {
     return this.appointments.some(app => 
       app.id !== excludeId &&
@@ -25,49 +24,42 @@ class AppointmentManager {
     );
   }
 
-  add(appointmentData) {
-    if (this.hasConflict(appointmentData.doctor, appointmentData.date, appointmentData.time)) {
+  add(data) {
+    if (this.hasConflict(data.doctor, data.date, data.time)) {
       throw new Error("Ce médecin possède déjà un rendez-vous à cette date et cette heure.");
     }
-
-    const newAppointment = {
-      id: Date.now().toString(),
-      ...appointmentData
-    };
-
-    this.appointments.push(newAppointment);
+    const newApp = { id: Date.now().toString(), ...data };
+    this.appointments.push(newApp);
     Storage.saveAppointments(this.appointments);
-    return newAppointment;
+    return newApp;
   }
 
-  update(id, updatedData) {
-    if (this.hasConflict(updatedData.doctor, updatedData.date, updatedData.time, id)) {
+  update(id, data) {
+    if (this.hasConflict(data.doctor, data.date, data.time, id)) {
       throw new Error("Ce médecin possède déjà un rendez-vous à cette date et cette heure.");
     }
-
-    const index = this.appointments.findIndex(app => app.id === id);
-    if (index !== -1) {
-      this.appointments[index] = { id, ...updatedData };
+    const idx = this.appointments.findIndex(a => a.id === id);
+    if (idx !== -1) {
+      this.appointments[idx] = { id, ...data };
       Storage.saveAppointments(this.appointments);
     }
   }
 
   updateStatus(id, newStatus) {
-    const appointment = this.appointments.find(app => app.id === id);
-    if (appointment) {
-      appointment.status = newStatus;
+    const app = this.appointments.find(a => a.id === id);
+    if (app) {
+      app.status = newStatus;
       Storage.saveAppointments(this.appointments);
     }
   }
 
   delete(id) {
-    this.appointments = this.appointments.filter(app => app.id !== id);
+    this.appointments = this.appointments.filter(a => a.id !== id);
     Storage.saveAppointments(this.appointments);
   }
 
   getStats() {
     const total = this.appointments.length;
-    // Compter les patients uniques par nom
     const uniquePatients = new Set(this.appointments.map(a => a.patient.trim().toLowerCase())).size;
     const pending = this.appointments.filter(a => a.status === 'PENDING').length;
     const completed = this.appointments.filter(a => a.status === 'COMPLETED').length;
