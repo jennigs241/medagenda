@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MedAgenda - Gestion des rendez-vous</title>
-  <link rel="stylesheet" href="src/css/style.css">
-  
-  <!-- Fichier JS unique chargé avec defer -->
-  <script src="src/main.js" defer></script>
+  <link rel="stylesheet" href="js/style.css">
+  <script src="js/app.js" defer></script>
 </head>
 <body>
 
@@ -43,7 +41,7 @@
       </div>
     </section>
 
-    <!-- Toolbar -->
+    <!-- Barre d'outils -->
     <section class="toolbar">
       <div class="toolbar-left">
         <button id="btn-open-modal" class="btn btn-primary">+ Nouveau rendez-vous</button>
@@ -68,14 +66,14 @@
       </div>
     </section>
 
-    <!-- Liste RDV -->
+    <!-- Liste des rendez-vous -->
     <section class="appointments-section">
       <h2>Liste des rendez-vous</h2>
       <div id="appointments-container" class="appointments-grid"></div>
     </section>
   </main>
 
-  <!-- Modal -->
+  <!-- Modal Formulaire -->
   <div id="modal-form" class="modal hidden">
     <div class="modal-content">
       <span class="close-modal" id="btn-close-modal">&times;</span>
@@ -85,12 +83,12 @@
 
         <div class="form-group">
           <label for="patient">Nom du patient *</label>
-          <input type="text" id="patient" required autocomplete="name">
+          <input type="text" id="patient" required autocomplete="off">
         </div>
 
         <div class="form-group">
           <label for="phone">Téléphone *</label>
-          <input type="tel" id="phone" required autocomplete="tel">
+          <input type="tel" id="phone" required autocomplete="off">
         </div>
 
         <div class="form-group">

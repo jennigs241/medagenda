@@ -1,63 +1,71 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const manager = new AppointmentManager();
+const STORAGE_KEY = 'medagenda_appointments';
 
-  // Éléments DOM
+const STATUS_LABELS = {
+  PENDING: 'En attente',
+  CONFIRMED: 'Confirmé',
+  COMPLETED: 'Terminé',
+  CANCELLED: 'Annulé'
+};
+
+function getAppointments() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : [];
+}
+
+function saveAppointments(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  let appointments = getAppointments();
+
+  // Éléments du DOM
   const container = document.getElementById('appointments-container');
   const form = document.getElementById('appointment-form');
   const modal = document.getElementById('modal-form');
-  const doctorSelect = document.getElementById('doctor');
   const errorBox = document.getElementById('form-error');
 
-  // Filtres
+  const btnOpenModal = document.getElementById('btn-open-modal');
+  const btnCloseModal = document.getElementById('btn-close-modal');
+  const btnCancelForm = document.getElementById('btn-cancel-form');
+  const btnToday = document.getElementById('btn-today');
+  const btnReset = document.getElementById('btn-reset-filters');
+  const btnExport = document.getElementById('btn-export-csv');
+
   const searchInput = document.getElementById('search-input');
   const filterStatus = document.getElementById('filter-status');
   const filterDate = document.getElementById('filter-date');
 
-  // 1. Bonus : Chargement dynamique des médecins async/await
-  async function loadDoctors() {
-    try {
-      const response = await fetch('data/doctors.json');
-      if (!response.ok) throw new Error('Erreur de chargement');
-      const doctors = await response.json();
-
-      doctorSelect.innerHTML = '<option value="">-- Sélectionner un médecin --</option>';
-      doctors.forEach(doc => {
-        const option = document.createElement('option');
-        option.value = doc;
-        option.textContent = doc;
-        doctorSelect.appendChild(option);
-      });
-    } catch (error) {
-      doctorSelect.innerHTML = '<option value="">Erreur de chargement des médecins</option>';
-      console.error(error);
-    }
-  }
-
-  // 2. Mise à jour des statistiques
+  // Mise à jour des cartes de statistiques
   function updateStats() {
-    const stats = manager.getStats();
-    document.getElementById('stat-total').textContent = stats.total;
-    document.getElementById('stat-patients').textContent = stats.patients;
-    document.getElementById('stat-pending').textContent = stats.pending;
-    document.getElementById('stat-completed').textContent = stats.completed;
-    document.getElementById('stat-cancelled').textContent = stats.cancelled;
+    const total = appointments.length;
+    const patients = new Set(appointments.map(a => a.patient.trim().toLowerCase())).size;
+    const pending = appointments.filter(a => a.status === 'PENDING').length;
+    const completed = appointments.filter(a => a.status === 'COMPLETED').length;
+    const cancelled = appointments.filter(a => a.status === 'CANCELLED').length;
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-patients').textContent = patients;
+    document.getElementById('stat-pending').textContent = pending;
+    document.getElementById('stat-completed').textContent = completed;
+    document.getElementById('stat-cancelled').textContent = cancelled;
   }
 
-  // 3. Rendu dynamique de la liste des RDV
-  function renderAppointments() {
+  // Rendu de la liste
+  function render() {
     const query = searchInput.value.toLowerCase().trim();
-    const selectedStatus = filterStatus.value;
-    const selectedDate = filterDate.value;
+    const statusVal = filterStatus.value;
+    const dateVal = filterDate.value;
 
-    const filtered = manager.getAll().filter(app => {
+    const filtered = appointments.filter(app => {
       const matchSearch = 
         app.patient.toLowerCase().includes(query) ||
         app.phone.toLowerCase().includes(query) ||
         app.doctor.toLowerCase().includes(query) ||
         app.reason.toLowerCase().includes(query);
 
-      const matchStatus = selectedStatus === 'ALL' || app.status === selectedStatus;
-      const matchDate = !selectedDate || app.date === selectedDate;
+      const matchStatus = statusVal === 'ALL' || app.status === statusVal;
+      const matchDate = !dateVal || app.date === dateVal;
 
       return matchSearch && matchStatus && matchDate;
     });
@@ -65,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = '';
 
     if (filtered.length === 0) {
-      container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #6b7280;">Aucun rendez-vous trouvé.</p>';
+      container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #6b7280; padding: 20px;">Aucun rendez-vous trouvé.</p>';
       return;
     }
 
@@ -94,9 +102,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Actions globales rendues accessibles sur la fenêtre
+  function refreshUI() {
+    render();
+    updateStats();
+  }
+
+  // Règle métier obligatoire
+  function hasConflict(doctor, date, time, excludeId = null) {
+    return appointments.some(app => 
+      app.id !== excludeId &&
+      app.doctor === doctor &&
+      app.date === date &&
+      app.time === time &&
+      app.status !== 'CANCELLED'
+    );
+  }
+
+  // Fonctions globales
   window.editApp = (id) => {
-    const app = manager.getAll().find(a => a.id === id);
+    const app = appointments.find(a => a.id === id);
     if (!app) return;
 
     document.getElementById('appointment-id').value = app.id;
@@ -113,30 +137,29 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.setStatus = (id, status) => {
-    manager.updateStatus(id, status);
-    refreshUI();
+    const app = appointments.find(a => a.id === id);
+    if (app) {
+      app.status = status;
+      saveAppointments(appointments);
+      refreshUI();
+    }
   };
 
   window.cancelApp = (id) => {
     if (confirm("Êtes-vous sûr de vouloir annuler ce rendez-vous ?")) {
-      manager.updateStatus(id, 'CANCELLED');
-      refreshUI();
+      window.setStatus(id, 'CANCELLED');
     }
   };
 
   window.deleteApp = (id) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer définitivement ce rendez-vous ?")) {
-      manager.delete(id);
+      appointments = appointments.filter(a => a.id !== id);
+      saveAppointments(appointments);
       refreshUI();
     }
   };
 
-  function refreshUI() {
-    renderAppointments();
-    updateStats();
-  }
-
-  // Modal Control
+  // Modale
   function showModal() {
     errorBox.classList.add('hidden');
     modal.classList.remove('hidden');
@@ -148,16 +171,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('appointment-id').value = '';
   }
 
-  // Événements
-  document.getElementById('btn-open-modal').addEventListener('click', () => {
-    document.getElementById('modal-title').textContent = 'Nouveau rendez-vous';
-    showModal();
-  });
+  // Attachement des événements
+  if (btnOpenModal) {
+    btnOpenModal.addEventListener('click', () => {
+      document.getElementById('modal-title').textContent = 'Nouveau rendez-vous';
+      showModal();
+    });
+  }
 
-  document.getElementById('btn-close-modal').addEventListener('click', hideModal);
-  document.getElementById('btn-cancel-form').addEventListener('click', hideModal);
+  if (btnCloseModal) btnCloseModal.addEventListener('click', hideModal);
+  if (btnCancelForm) btnCancelForm.addEventListener('click', hideModal);
 
-  // Soumission du formulaire (Ajout / Modification)
+  // Soumission du Formulaire
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -172,62 +197,59 @@ document.addEventListener('DOMContentLoaded', () => {
       status: document.getElementById('status').value
     };
 
-    try {
-      if (id) {
-        manager.update(id, data);
-      } else {
-        manager.add(data);
-      }
-      hideModal();
-      refreshUI();
-    } catch (err) {
-      errorBox.textContent = err.message;
+    if (hasConflict(data.doctor, data.date, data.time, id)) {
+      errorBox.textContent = "Ce médecin possède déjà un rendez-vous à cette date et cette heure.";
       errorBox.classList.remove('hidden');
-    }
-  });
-
-  // Événements Filtres
-  searchInput.addEventListener('input', renderAppointments);
-  filterStatus.addEventListener('change', renderAppointments);
-  filterDate.addEventListener('change', renderAppointments);
-
-  document.getElementById('btn-reset-filters').addEventListener('click', () => {
-    searchInput.value = '';
-    filterStatus.value = 'ALL';
-    filterDate.value = '';
-    renderAppointments();
-  });
-
-  // Bonus : Bouton RDV du jour
-  document.getElementById('btn-today').addEventListener('click', () => {
-    const today = new Date().toISOString().split('T')[0];
-    filterDate.value = today;
-    renderAppointments();
-  });
-
-  // Bonus Fonctionnalité Personnelle : Export CSV
-  document.getElementById('btn-export-csv').addEventListener('click', () => {
-    const appointments = manager.getAll();
-    if (appointments.length === 0) {
-      alert("Aucune donnée à exporter.");
       return;
     }
 
-    let csvContent = "data:text/csv;charset=utf-8,ID,Patient,Telephone,Medecin,Date,Heure,Motif,Statut\n";
-    appointments.forEach(app => {
-      csvContent += `"${app.id}","${app.patient}","${app.phone}","${app.doctor}","${app.date}","${app.time}","${app.reason}","${app.status}"\n`;
-    });
+    if (id) {
+      const idx = appointments.findIndex(a => a.id === id);
+      if (idx !== -1) appointments[idx] = { id, ...data };
+    } else {
+      appointments.push({ id: Date.now().toString(), ...data });
+    }
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `medagenda_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    saveAppointments(appointments);
+    hideModal();
+    refreshUI();
   });
 
-  // Initialisation
-  loadDoctors();
+  // Filtres
+  if (searchInput) searchInput.addEventListener('input', render);
+  if (filterStatus) filterStatus.addEventListener('change', render);
+  if (filterDate) filterDate.addEventListener('change', render);
+
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      searchInput.value = '';
+      filterStatus.value = 'ALL';
+      filterDate.value = '';
+      render();
+    });
+  }
+
+  if (btnToday) {
+    btnToday.addEventListener('click', () => {
+      filterDate.value = new Date().toISOString().split('T')[0];
+      render();
+    });
+  }
+
+  if (btnExport) {
+    btnExport.addEventListener('click', () => {
+      if (appointments.length === 0) return alert("Aucun rendez-vous à exporter.");
+      let csv = "data:text/csv;charset=utf-8,ID,Patient,Tel,Medecin,Date,Heure,Motif,Statut\n";
+      appointments.forEach(a => {
+        csv += `"${a.id}","${a.patient}","${a.phone}","${a.doctor}","${a.date}","${a.time}","${a.reason}","${a.status}"\n`;
+      });
+      const link = document.createElement("a");
+      link.href = encodeURI(csv);
+      link.download = "medagenda_export.csv";
+      link.click();
+    });
+  }
+
+  // Premier affichage au chargement
   refreshUI();
 });
