@@ -1,7 +1,7 @@
 {
   "name": "medagenda",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0",
+    "gh-pages": "^6.1.1",
     "vite": "^5.4.2"
   }
 }

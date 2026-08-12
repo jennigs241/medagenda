@@ -1,30 +1,30 @@
-import { getAppointments } from './storage.js';
+const STORAGE_KEY = 'medagenda_rdv';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('appointment-modal');
-  const btnOpenModal = document.getElementById('btn-open-modal');
-  const btnCloseModal = document.querySelector('.close-modal');
-  const btnCancelForm = document.getElementById('btn-cancel-form');
-
-  // Ouvrir la modale (+ Nouveau rendez-vous)
-  if (btnOpenModal) {
-    btnOpenModal.addEventListener('click', () => {
-      modal.classList.remove('hidden');
-    });
-  }
-
-  // Fermer la modale
-  const closeModal = () => modal.classList.add('hidden');
-  if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
-  if (btnCancelForm) btnCancelForm.addEventListener('click', closeModal);
-
-  // Charger et afficher les RDV
-  refreshUI();
-});
-
-function refreshUI() {
-  const appointments = getAppointments();
-  renderAppointments(appointments);
-  updateStats(appointments);
+export function getAppointments() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : [];
 }
+
+export function saveAppointment(appointment) {
+  const appointments = getAppointments();
+  const index = appointments.findIndex(app => app.id === appointment.id);
   
+  if (index !== -1) {
+    appointments[index] = appointment;
+  } else {
+    appointments.push(appointment);
+  }
+  
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+}
+
+export function deleteAppointment(id) {
+  let appointments = getAppointments();
+  appointments = appointments.filter(app => app.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+}
+
+export function getAppointmentById(id) {
+  const appointments = getAppointments();
+  return appointments.find(app => app.id === id) || null;
+}

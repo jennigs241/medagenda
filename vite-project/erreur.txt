@@ -1,0 +1,20 @@
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+
+./css/style.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+transforming...
+[32m✓[39m 2 modules transformed.
+[31mx[39m Build failed in 144ms
+[31merror during build:
+[31m[vite:define] Transform failed with 1 error:
+C:/Users/BC 241/Documents/Formation Coach DA SYLVA/projet final med agenda/vite-project/js/app.js:1:0: ERROR: Unexpected "<<"[31m
+file: [36mC:/Users/BC 241/Documents/Formation Coach DA SYLVA/projet final med agenda/vite-project/js/app.js[31m
+    at failureErrorWithLog (C:\Users\BC 241\Documents\Formation Coach DA SYLVA\projet final med agenda\vite-project\node_modules\esbuild\lib\main.js:1472:15)
+    at C:\Users\BC 241\Documents\Formation Coach DA SYLVA\projet final med agenda\vite-project\node_modules\esbuild\lib\main.js:755:50
+    at responseCallbacks.<computed> (C:\Users\BC 241\Documents\Formation Coach DA SYLVA\projet final med agenda\vite-project\node_modules\esbuild\lib\main.js:622:9)
+    at handleIncomingPacket (C:\Users\BC 241\Documents\Formation Coach DA SYLVA\projet final med agenda\vite-project\node_modules\esbuild\lib\main.js:677:12)
+    at Socket.readFromStdout (C:\Users\BC 241\Documents\Formation Coach DA SYLVA\projet final med agenda\vite-project\node_modules\esbuild\lib\main.js:600:7)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m
